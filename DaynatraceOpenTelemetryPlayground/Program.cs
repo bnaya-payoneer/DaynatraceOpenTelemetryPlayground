@@ -1,5 +1,6 @@
 // credit: https://opentelemetry.io/docs/instrumentation/net/getting-started/
 
+using AspireDashboard.Extensions;
 using Bnaya.Examples;
 using Microsoft.AspNetCore.Mvc;
 using OpenTelemetry.Logs;
@@ -25,24 +26,26 @@ builder.Logging.AddOpenTelemetry(options =>
 });
 builder.Services.AddOpenTelemetry()
       .ConfigureResource(resource =>
-            resource.AddService(serviceName))
+            resource.AddService(serviceName)
+                    .AddAttributes(new[] { KeyValuePair.Create<string, object>("custom-value", 42) }))
       .WithTracing(tracing => tracing
           .AddSource(Instrumentation.ActivitySourceName)
           .AddAspNetCoreInstrumentation()
           .AddHttpClientInstrumentation()
           .AddOtlpExporter()
+          //.AddConsoleExporter()
           //.AddOtlpExporter(options =>
           //{
           //    options.Endpoint = new Uri(Environment.GetEnvironmentVariable("DT_API_URL") + "/v1/traces");
           //    options.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.HttpProtobuf;
           //    options.Headers = $"Authorization=Api-Token {Environment.GetEnvironmentVariable("DT_API_TOKEN")}";
           //})
-          .AddConsoleExporter()
           .SetSampler<AlwaysOnSampler>())
       .WithMetrics(metrics => metrics
           .AddMeter(Instrumentation.MeterName)
           .AddAspNetCoreInstrumentation()
           .AddHttpClientInstrumentation()
+          //.AddConsoleExporter()
           .AddOtlpExporter()
           //.AddOtlpExporter(options =>
           //{
@@ -50,10 +53,10 @@ builder.Services.AddOpenTelemetry()
           //    options.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.HttpProtobuf;
           //    options.Headers = $"Authorization=Api-Token {Environment.GetEnvironmentVariable("DT_API_TOKEN")}";
           //})
-          .AddPrometheusExporter()
-          .AddConsoleExporter());
+          .AddPrometheusExporter());
 
 builder.Services.AddSingleton<IInstrumentation, Instrumentation>();
+builder.Services.AddAspireDashboard();
 
 // *************************************************************************
 
@@ -63,6 +66,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+app.UseStaticFiles(); // needed for aspire dashboard
 
 // *************************************************************************
 // https://github.com/open-telemetry/opentelemetry-dotnet/blob/main/src/OpenTelemetry.Exporter.Prometheus.AspNetCore/README.md
@@ -98,6 +102,7 @@ async Task<string> HandleRollDice(
 
     await Task.Delay(result * 100);
     using var trcIn = instrumentation.TraceFactory.StartActivity("bnaya.rolling.internal");
+    logger.LogInformation("Internal span: {result}", result);
     await Task.Delay((12 - result) * 100);
 
     return result.ToString(CultureInfo.InvariantCulture);

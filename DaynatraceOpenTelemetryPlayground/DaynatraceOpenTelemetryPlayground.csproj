@@ -8,12 +8,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+	  <PackageReference Include="Aspire.Dashboard" Version="8.0.0-preview.1.23557.2" />
+	  <PackageReference Include="AspireDashboard.Extensions" Version="0.0.11-alpha" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.6.0" />
     <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.6.0" />
     <PackageReference Include="OpenTelemetry.Exporter.Prometheus.AspNetCore" Version="1.6.0-rc.1" />
     <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.6.0" />
     <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.6.0-rc.1" />
     <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.6.0-rc.1" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
