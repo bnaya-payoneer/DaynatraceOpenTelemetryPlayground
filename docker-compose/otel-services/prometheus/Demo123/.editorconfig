@@ -1,4 +1,0 @@
-﻿[*.cs]
-
-# ConstFieldDocumentationHeader: The field must have a documentation header.
-dotnet_diagnostic.ConstFieldDocumentationHeader.severity = none

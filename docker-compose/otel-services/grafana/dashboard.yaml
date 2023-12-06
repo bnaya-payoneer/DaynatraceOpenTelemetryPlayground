@@ -10,5 +10,5 @@ providers:
     allowUiUpdates: false
     isDefault: true
     options:
-      path: /var/lib/grafana/dashboards/Event-Sourcing
+      path: /var/lib/grafana/dashboards/General
       foldersFromFilesStructure: true

@@ -7,3 +7,6 @@
 - Grafana
   - [Dashboard](https://github.com/dotnet/aspire/tree/main/src/Grafana)
 
+# Health
+
+## Check Prometheus: http://localhost:9090/targets

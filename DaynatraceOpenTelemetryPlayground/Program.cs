@@ -43,9 +43,9 @@ builder.Services.AddOpenTelemetry()
           .SetSampler<AlwaysOnSampler>())
       .WithMetrics(metrics => metrics
           .AddMeter(Instrumentation.MeterName)
-          .AddAspNetCoreInstrumentation()
-          .AddHttpClientInstrumentation()
-          //.AddConsoleExporter()
+          //.AddAspNetCoreInstrumentation()
+          //.AddHttpClientInstrumentation()
+          .AddConsoleExporter()
           .AddOtlpExporter()
           //.AddOtlpExporter(options =>
           //{
@@ -89,20 +89,23 @@ async Task<string> HandleRollDice(
 {
     using var trc = instrumentation.TraceFactory.StartActivity("bnaya.rolling");
     var result = RollDice();
-    instrumentation.Mod3.Add(result);
+    instrumentation.Metrics.CustomMetrics.Add(result);
 
     if (string.IsNullOrEmpty(player))
     {
-        logger.LogInformation("Anonymous player is rolling the dice: {result}", result);
+        logger.LogAnonymous(result);
     }
     else
     {
-        logger.LogInformation("{player} is rolling the dice: {result}", player, result);
+        logger.LogPlayer(player, result);
     }
 
     await Task.Delay(result * 100);
     using var trcIn = instrumentation.TraceFactory.StartActivity("bnaya.rolling.internal");
-    logger.LogInformation("Internal span: {result}", result);
+    logger.LogInternal(result);
+    await Task.Delay(result * 10);
+    instrumentation.Metrics.CustomMetrics.Add(result);
+    instrumentation.EventFactory.Write("pin");
     await Task.Delay((12 - result) * 100);
 
     return result.ToString(CultureInfo.InvariantCulture);

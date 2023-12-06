@@ -2,10 +2,12 @@
 
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
+using System.Diagnostics.Tracing;
 
 namespace Bnaya.Examples;
 public interface IInstrumentation: IDisposable
 {
-    Counter<long> Mod3 { get; }
+    IMetrics Metrics { get; }
     ActivitySource TraceFactory { get; }
+    EventSource EventFactory { get; }
 }
