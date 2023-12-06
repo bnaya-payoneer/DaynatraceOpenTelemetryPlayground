@@ -19,7 +19,8 @@ builder.Logging.AddOpenTelemetry(options =>
     options
         .SetResourceBuilder(
             ResourceBuilder.CreateDefault()
-                .AddService(serviceName));
+                .AddService(serviceName))
+        .AddOtlpExporter();
         //.AddConsoleExporter();
 });
 builder.Services.AddOpenTelemetry()
@@ -27,14 +28,28 @@ builder.Services.AddOpenTelemetry()
             resource.AddService(serviceName))
       .WithTracing(tracing => tracing
           .AddSource(Instrumentation.ActivitySourceName)
-          //.AddAspNetCoreInstrumentation()
+          .AddAspNetCoreInstrumentation()
+          .AddHttpClientInstrumentation()
           .AddOtlpExporter()
+          //.AddOtlpExporter(options =>
+          //{
+          //    options.Endpoint = new Uri(Environment.GetEnvironmentVariable("DT_API_URL") + "/v1/traces");
+          //    options.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.HttpProtobuf;
+          //    options.Headers = $"Authorization=Api-Token {Environment.GetEnvironmentVariable("DT_API_TOKEN")}";
+          //})
           .AddConsoleExporter()
           .SetSampler<AlwaysOnSampler>())
       .WithMetrics(metrics => metrics
           .AddMeter(Instrumentation.MeterName)
-          //.AddAspNetCoreInstrumentation()
+          .AddAspNetCoreInstrumentation()
+          .AddHttpClientInstrumentation()
           .AddOtlpExporter()
+          //.AddOtlpExporter(options =>
+          //{
+          //    options.Endpoint = new Uri(Environment.GetEnvironmentVariable("DT_API_URL") + "/v1/traces");
+          //    options.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.HttpProtobuf;
+          //    options.Headers = $"Authorization=Api-Token {Environment.GetEnvironmentVariable("DT_API_TOKEN")}";
+          //})
           .AddPrometheusExporter()
           .AddConsoleExporter());
 

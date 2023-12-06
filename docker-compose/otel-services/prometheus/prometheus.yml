@@ -21,8 +21,8 @@ scrape_configs:
   scheme: http
   static_configs:
   - targets:
-    - host.docker.internal:5028 # when prometheus is hosting within a docker container
-    - localhost:5028            # when prometheus is hosting on localhost
+    - host.docker.internal:5146 # when prometheus is hosting within a docker container
+    - localhost:5146            # when prometheus is hosting on localhost
 # - job_name: the-job-name
 #   honor_timestamps: true
 #   scrape_interval: 15s

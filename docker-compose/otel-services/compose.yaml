@@ -3,7 +3,7 @@ name: otel-services
 services:
   redis:
     image: redislabs/rejson
-    container_name: redis-event-source
+    container_name: redis
     ports:
       - 6379:6379
     restart: unless-stopped
