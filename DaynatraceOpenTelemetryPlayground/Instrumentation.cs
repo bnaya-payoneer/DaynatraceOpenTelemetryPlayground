@@ -36,9 +36,13 @@ public class Instrumentation : IInstrumentation
     {
         internal MetricsInternal(Meter meter)
         {
-            CustomMetrics = meter.CreateCounter<long>("my.custom.metrics", "Custom one");
+            CustomMetrics1 = meter.CreateCounter<long>("my.custom.metrics1", "count");
+            CustomMetrics2 = meter.CreateCounter<long>("my.custom.metrics2", "count");
+            CustomMetrics3 = meter.CreateUpDownCounter<long>("my.custom.metrics3", "count");
         }
-        public Counter<long> CustomMetrics { get; }
+        public Counter<long> CustomMetrics1 { get; }
+        public Counter<long> CustomMetrics2 { get; }
+        public UpDownCounter<long> CustomMetrics3 { get; }
     }
 
     public void Dispose()

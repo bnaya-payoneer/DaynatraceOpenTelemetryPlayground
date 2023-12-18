@@ -89,8 +89,10 @@ async Task<string> HandleRollDice(
 {
     using var trc = instrumentation.TraceFactory.StartActivity("bnaya.rolling");
     var result = RollDice();
-    instrumentation.Metrics.CustomMetrics.Add(result);
-
+    instrumentation.Metrics.CustomMetrics1.Add(result);
+    instrumentation.Metrics.CustomMetrics2.Add(result % 2 == 0 ? result * 2 : -result * 2);
+    instrumentation.Metrics.CustomMetrics3.Add(result);
+        
     if (string.IsNullOrEmpty(player))
     {
         logger.LogAnonymous(result);
@@ -104,7 +106,7 @@ async Task<string> HandleRollDice(
     using var trcIn = instrumentation.TraceFactory.StartActivity("bnaya.rolling.internal");
     logger.LogInternal(result);
     await Task.Delay(result * 10);
-    instrumentation.Metrics.CustomMetrics.Add(result);
+    instrumentation.Metrics.CustomMetrics1.Add(result);
     instrumentation.EventFactory.Write("pin");
     await Task.Delay((12 - result) * 100);
 

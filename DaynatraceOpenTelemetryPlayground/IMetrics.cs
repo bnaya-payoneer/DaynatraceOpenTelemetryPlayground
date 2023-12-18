@@ -5,5 +5,7 @@ using System.Diagnostics.Metrics;
 namespace Bnaya.Examples;
 public interface IMetrics
 {
-    Counter<long> CustomMetrics { get; }
+    Counter<long> CustomMetrics1 { get; }
+    Counter<long> CustomMetrics2 { get; }
+    UpDownCounter<long> CustomMetrics3 { get; }
 }   
