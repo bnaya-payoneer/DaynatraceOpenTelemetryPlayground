@@ -8,12 +8,16 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using System.Globalization;
+using System.Reflection;
 
 const string serviceName = "roll-dice";
 
 var builder = WebApplication.CreateBuilder(args);
 
 // *************************************************************************
+
+string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+var honeycombApiKey  = Environment.GetEnvironmentVariable("Honeycomb-API-Key") ?? throw new NullReferenceException();
 
 builder.Logging.AddOpenTelemetry(options =>
 {
@@ -24,14 +28,35 @@ builder.Logging.AddOpenTelemetry(options =>
         .AddOtlpExporter();
         //.AddConsoleExporter();
 });
+#pragma warning disable CS8604 // Possible null reference argument.
+
 builder.Services.AddOpenTelemetry()
       .ConfigureResource(resource =>
             resource.AddService(serviceName)
-                    .AddAttributes(new[] { KeyValuePair.Create<string, object>("custom-value", 42) }))
+                    //.AddAttributes(new[] {
+                    //    KeyValuePair.Create<string, object>("K8s_POD_NAME", 
+                    //            Environment.GetEnvironmentVariable("K8s_POD_NAME")),
+                    //    KeyValuePair.Create<string, object>("K8s_NS", 
+                    //            Environment.GetEnvironmentVariable("K8s_NS")),
+                    //    KeyValuePair.Create<string, object>("APP_VERSION",
+                    //            Assembly.GetExecutingAssembly().GetName().Version)
+                    //})
+                    )
+
       .WithTracing(tracing => tracing
+          .ConfigureResource(resource => resource.AddService(serviceName))
           .AddSource(Instrumentation.ActivitySourceName)
           .AddAspNetCoreInstrumentation()
           .AddHttpClientInstrumentation()
+          .AddGrpcClientInstrumentation()
+          //.AddHoneycomb(cfg =>
+          //{
+          //    cfg.ApiKey = honeycombApiKey;
+          //    cfg.ServiceName = serviceName;
+          //    cfg.ServiceVersion = version;
+          //})
+          //.AddRedisInstrumentation()
+          //.AddSqlClientInstrumentation()
           .AddOtlpExporter()
           //.AddConsoleExporter()
           //.AddOtlpExporter(options =>
@@ -42,7 +67,14 @@ builder.Services.AddOpenTelemetry()
           //})
           .SetSampler<AlwaysOnSampler>())
       .WithMetrics(metrics => metrics
+          .ConfigureResource(resource => resource.AddService(serviceName))
           .AddMeter(Instrumentation.MeterName)
+          //.AddHoneycomb(cfg =>
+          //{
+          //    cfg.ApiKey = honeycombApiKey;
+          //    cfg.ServiceName = serviceName;
+          //    cfg.ServiceVersion = version;
+          //})
           //.AddAspNetCoreInstrumentation()
           //.AddHttpClientInstrumentation()
           .AddConsoleExporter()
@@ -54,6 +86,7 @@ builder.Services.AddOpenTelemetry()
           //    options.Headers = $"Authorization=Api-Token {Environment.GetEnvironmentVariable("DT_API_TOKEN")}";
           //})
           .AddPrometheusExporter());
+#pragma warning restore CS8604 // Possible null reference argument.
 
 builder.Services.AddSingleton<IInstrumentation, Instrumentation>();
 builder.Services.AddAspireDashboard();
